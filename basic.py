@@ -71,9 +71,7 @@ def basic(s1,s2):
     print(matching1)
     print(matching2)
 
-    # output results into specified output file
-
-    #return total_mismatch_cost
+    return dp[n][m], matching1, matching2
 
 
 
@@ -91,6 +89,7 @@ def main():
     # memory_calc()
 
     # for data in datapoints:
+        # generate()
         #basic(args.input)
 
 if __name__ == '__main__':

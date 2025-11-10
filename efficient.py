@@ -26,7 +26,7 @@ ALPHA = {
 DELTA = 30
 
 # dp algorithm
-def efficient(s):
+def efficient(s1,s2):
     # code goes here
     pass
 
@@ -40,11 +40,14 @@ def main():
 
     args = parser.parse_args()
 
+    # input generation
+    #s1,s2 = generate(args.input)
+
     # add time & memory assessment here
     # time_calc()
     # memory_calc()
 
-    efficient(args.input)
+    #efficient(args.input)
 
 if __name__ == '__main__':
     main()

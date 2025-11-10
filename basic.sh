@@ -1,1 +1,1 @@
-python basic.py 
+python basic.py
