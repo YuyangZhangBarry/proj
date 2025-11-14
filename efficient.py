@@ -2,7 +2,9 @@
 
 # import modules
 import argparse
+import math
 from input_generate import generate
+from basic import basic
 
 # cost
 ALPHA = {
@@ -26,9 +28,37 @@ ALPHA = {
 DELTA = 30
 
 # dp algorithm
-def efficient(s1,s2):
+def efficient(s1,s2,base_len):
     # code goes here
-    pass
+    # base length should be higher than at least 1
+    base_len = max(base_len,1)
+
+
+    def recur(start_1,end_1,start_2,end_2):
+        if end_1 - start_1 + 1 <= base_len or end_2 - start_2 + 1:
+            # solve this directly
+            return basic(s1[start_1:end_1+1],s2[start_2:end_2+1])
+        
+        # split s1 in half
+        mid = (start_1+end_1)//2
+
+        dp, _, _, _ = basic(s1[start_1,mid+1],s2[start_2,end_2+1])
+
+        dp_T, _, _, _ = basic(s1[end_1,mid,-1],s2[end_2:start_2-1,-1])
+
+        split_point = 0
+
+
+        #for i in range(dp[0]):
+
+            
+
+
+  
+        
+
+ 
+
 
 
 

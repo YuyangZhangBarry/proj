@@ -34,10 +34,10 @@ def basic(s1,s2):
     
     """bottom-up"""
     # initialization
-    for i in range(n+1):
-        dp[0][i] = i * DELTA
     for i in range(m+1):
-        dp [i][0] = i * DELTA
+        dp[0][i] = i * DELTA
+    for i in range(n+1):
+        dp[i][0] = i * DELTA
 
     for i in range(1,n+1):
         for j in range(1,m+1):
@@ -67,11 +67,31 @@ def basic(s1,s2):
             matching2 = s2[j-1] + matching2
             j -= 1
 
-    print(dp[n][m])
-    print(matching1)
-    print(matching2)
+    #print(dp[n][m])
+    #print(matching1)
+    #print(matching2)
 
-    return dp[n][m], matching1, matching2
+    return dp, dp[n][m], matching1, matching2
+
+def min_cost(s1,s2):
+    n , m = len(s1), len(s2)
+    dp = [] # m+1 columns
+    
+    """bottom-up"""
+    # initialization
+    for i in range(m+1):
+        dp.append(i * DELTA)
+
+    for i in range(1,n+1):
+        new_dp = [math.inf] * (m+1) 
+        new_dp[0] = i * DELTA
+        for j in range(1,m+1):
+            new_dp[j] = min(dp[j-1] + ALPHA[(s1[i-1],s2[j-1])], dp[j] + DELTA, new_dp[j-1] + DELTA)
+        dp = new_dp
+    
+    #print(dp[m])
+    return dp[m]
+
 
 
 
@@ -94,7 +114,8 @@ def main():
 
 if __name__ == '__main__':
     #main()
-    s1= 'ACACTGACTACTGACTGGTGACTACTGACTGG'
-    s2 = 'TATTATACGCTATTATACGCGACGCGGACGCG'
+    s1= 'ATTT'
+    s2 = 'ACGCA'
 
+    min_cost(s1,s2)
     basic(s1,s2)
