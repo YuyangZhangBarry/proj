@@ -39,6 +39,11 @@ def basic(s1,s2):
     for i in range(n+1):
         dp[i][0] = i * DELTA
 
+    if n == 0:
+        return m * DELTA, '_' * m, s2
+    if m == 0:
+        return n * DELTA, s1, '_' * n
+
     for i in range(1,n+1):
         for j in range(1,m+1):
             dp[i][j] = min(dp[i-1][j-1] + ALPHA[(s1[i-1],s2[j-1])], dp[i-1][j] + DELTA, dp[i][j-1] + DELTA)
@@ -71,7 +76,7 @@ def basic(s1,s2):
     #print(matching1)
     #print(matching2)
 
-    return dp, dp[n][m], matching1, matching2
+    return dp[n][m], matching1, matching2
 
 def min_cost(s1,s2):
     n , m = len(s1), len(s2)
@@ -89,8 +94,8 @@ def min_cost(s1,s2):
             new_dp[j] = min(dp[j-1] + ALPHA[(s1[i-1],s2[j-1])], dp[j] + DELTA, new_dp[j-1] + DELTA)
         dp = new_dp
     
-    #print(dp[m])
-    return dp[m]
+    #print(dp)
+    return dp
 
 
 
@@ -114,8 +119,8 @@ def main():
 
 if __name__ == '__main__':
     #main()
-    s1= 'ATTT'
-    s2 = 'ACGCA'
+    s1= 'ATC'
+    s2 = 'ATGGCT'
 
     min_cost(s1,s2)
     basic(s1,s2)
