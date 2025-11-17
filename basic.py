@@ -1,6 +1,7 @@
 """implementation of the basic DP solution"""
 
 # import modules
+import os
 import argparse
 import math
 from input_generate import generate
@@ -109,6 +110,19 @@ def main():
 
     args = parser.parse_args()
 
+    os.makedirs(args.output,exist_ok=True)
+
+    for file in os.listdir(args.input):
+        if file.endswith('.txt'):
+            s1, s2 = generate(os.path.join(args.input,file))
+            align_cost, matching_1, matching_2 = basic(s1,s2)
+            with open(os.path.join(args.output,file.replace('in','output')), 'w') as f:
+                data = [str(align_cost),'\n',
+                        matching_1,'\n',
+                        matching_2,'\n']
+                f.writelines(data)
+
+
     # add time & memory assessment here
     # time_calc()
     # memory_calc()
@@ -118,9 +132,9 @@ def main():
         #basic(args.input)
 
 if __name__ == '__main__':
-    #main()
-    s1= 'ATC'
-    s2 = 'ATGGCT'
+    main()
+    #s1= 'ATC'
+    #s2 = 'ATGGCT'
 
-    min_cost(s1,s2)
-    basic(s1,s2)
+    #min_cost(s1,s2)
+    #basic(s1,s2)
