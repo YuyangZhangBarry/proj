@@ -34,9 +34,9 @@ def basic(s1,s2):
     
     """bottom-up"""
     # initialization
-    for i in range(n+1):
-        dp[0][i] = i * DELTA
     for i in range(m+1):
+        dp[0][i] = i * DELTA
+    for i in range(n+1):
         dp [i][0] = i * DELTA
 
     for i in range(1,n+1):
