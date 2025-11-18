@@ -1,0 +1,1 @@
+python efficient.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints --output ../efficient_output
