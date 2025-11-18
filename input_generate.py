@@ -18,6 +18,7 @@ def generate(input_path):
             i += 1
 
         s2 = lines[i]
+        i += 1
         while i < n and lines[i].isdecimal():
             index = int(lines[i])
             s2 = s2[:index+1] + s2 + s2[index+1:]

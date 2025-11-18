@@ -54,14 +54,14 @@ def basic(s1,s2):
     matching1 = matching2 = ''
     i,j = n,m
     while i > 0 or j > 0:
-        if dp[i][j] == dp[i-1][j-1] + ALPHA[(s1[i-1],s2[j-1])]:
+        if i > 0 and j > 0 and dp[i][j] == dp[i-1][j-1] + ALPHA[(s1[i-1],s2[j-1])]:
             # match!
             matching1 = s1[i-1] + matching1
             matching2 = s2[j-1] + matching2
             i -= 1
             j -= 1
 
-        elif dp[i][j] == dp[i-1][j] + DELTA:
+        elif i > 0 and dp[i][j] == dp[i-1][j] + DELTA:
             # s1 gap
             matching1 = s1[i-1] + matching1
             matching2 = '_' + matching2
@@ -73,17 +73,14 @@ def basic(s1,s2):
             matching2 = s2[j-1] + matching2
             j -= 1
 
-    #print(dp[n][m])
-    #print(matching1)
-    #print(matching2)
 
     return dp[n][m], matching1, matching2
 
-def min_cost(s1,s2):
+""" The dp solution which uses only two rows and only does a bottom-up pass """
+def min_cost(s1,s2):  
     n , m = len(s1), len(s2)
     dp = [] # m+1 columns
     
-    """bottom-up"""
     # initialization
     for i in range(m+1):
         dp.append(i * DELTA)
@@ -94,11 +91,8 @@ def min_cost(s1,s2):
         for j in range(1,m+1):
             new_dp[j] = min(dp[j-1] + ALPHA[(s1[i-1],s2[j-1])], dp[j] + DELTA, new_dp[j-1] + DELTA)
         dp = new_dp
-    
-    #print(dp)
+
     return dp
-
-
 
 
 
@@ -114,6 +108,7 @@ def main():
 
     for file in os.listdir(args.input):
         if file.endswith('.txt'):
+            print('Reading ',file)
             s1, s2 = generate(os.path.join(args.input,file))
             align_cost, matching_1, matching_2 = basic(s1,s2)
             with open(os.path.join(args.output,file.replace('in','output')), 'w') as f:
@@ -121,6 +116,7 @@ def main():
                         matching_1,'\n',
                         matching_2,'\n']
                 f.writelines(data)
+            print('Reading ',file, 'completed')
 
 
     # add time & memory assessment here
