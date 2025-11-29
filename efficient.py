@@ -100,9 +100,7 @@ def main():
         print('Reading ',args.input)
         s1, s2 = generate(args.input)
         start_time = time.time()
-        mem_start = process_memory()
         align_cost, matching_1, matching_2, mem = efficient(s1,s2,2)  # alter this last arg for performance testing
-        mem_end = process_memory()
         end_time = time.time()
         time_taken_ms = (end_time - start_time) * 1000
         print('Reading complete!')
@@ -113,10 +111,9 @@ def main():
                     matching_1,'\n',
                     matching_2,'\n',
                     str(time_taken_ms),'\n',
-                    str(mem),'\n',
-                    str(mem_end-mem_start),'\n']
+                    str(mem),'\n']
             f.writelines(data)
-        print('memory usage: ', mem, 'outside mem: ',mem_end-mem_start)
+        print('memory usage: ', mem)
         print('Writing complete!')
 
 
