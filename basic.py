@@ -3,6 +3,8 @@
 # import modules
 import os
 import argparse
+import time
+import psutil
 import math
 from input_generate import generate
 
@@ -26,6 +28,11 @@ ALPHA = {
     ('T','G') : 110
 }
 DELTA = 30
+
+def process_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss   # bytes
+    return mem / 1024       # KB
 
 # dp algorithm
 def basic(s1,s2):
@@ -73,7 +80,6 @@ def basic(s1,s2):
             matching2 = s2[j-1] + matching2
             j -= 1
 
-
     return dp[n][m], matching1, matching2
 
 """ The dp solution which uses only two rows and only does a bottom-up pass """
@@ -99,38 +105,31 @@ def min_cost(s1,s2):
 # main function
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input",required=True,type=str,help="path to datapoints")
+    parser.add_argument("--input",required=True,type=str,help="path to datapoint file")
     parser.add_argument("--output",required=True,type=str,help="path to output files")
 
     args = parser.parse_args()
+    directory = os.path.dirname(args.output)
+    os.makedirs(directory,exist_ok=True)
 
-    os.makedirs(args.output,exist_ok=True)
+    if args.input.endswith('.txt'):
+        print('Reading ',args.input)
+        s1, s2 = generate(args.input)
+        start_time = time.time()
+        align_cost, matching_1, matching_2, mem = basic(s1,s2)
+        end_time = time.time()
+        time_taken_ms = (end_time - start_time) * 1000
+        print('Reading complete!')
 
-    for file in os.listdir(args.input):
-        if file.endswith('.txt'):
-            print('Reading ',file)
-            s1, s2 = generate(os.path.join(args.input,file))
-            align_cost, matching_1, matching_2 = basic(s1,s2)
-            with open(os.path.join(args.output,file.replace('in','output')), 'w') as f:
-                data = [str(align_cost),'\n',
-                        matching_1,'\n',
-                        matching_2,'\n']
-                f.writelines(data)
-            print('Reading ',file, 'completed')
-
-
-    # add time & memory assessment here
-    # time_calc()
-    # memory_calc()
-
-    # for data in datapoints:
-        # generate()
-        #basic(args.input)
+        with open(args.output, 'w') as f:
+            print('Writing to:',args.output)
+            data = [str(align_cost),'\n',
+                    matching_1,'\n',
+                    matching_2,'\n',
+                    str(time_taken_ms),'\n',
+                    str(mem),'\n']
+            f.writelines(data)
+        print('Writing complete!')
 
 if __name__ == '__main__':
     main()
-    #s1= 'ATC'
-    #s2 = 'ATGGCT'
-
-    #min_cost(s1,s2)
-    #basic(s1,s2)

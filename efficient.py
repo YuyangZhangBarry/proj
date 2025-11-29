@@ -3,6 +3,8 @@
 # import modules
 import os
 import argparse
+import time
+import psutil
 import math
 from input_generate import generate
 from basic import basic, min_cost
@@ -28,10 +30,19 @@ ALPHA = {
 }
 DELTA = 30
 
+
+def process_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss   # bytes
+    return mem / 1024       # KB
+
+
 # D&C algorithm
 def efficient(s1,s2,base_len):
+    mem_start = process_memory()
     # base length should be higher than at least 1
     base_len = max(base_len,1)
+
     n, m = len(s1), len(s2)
 
     def recur(start_1,end_1,start_2,end_2):
@@ -68,49 +79,54 @@ def efficient(s1,s2,base_len):
 
         return cost_left+cost_right, m_1_left+m_1_right, m_2_left+m_2_right
     
-    
-
     total_c, m1, m2 = recur(0,n-1,0,m-1)    
-    return total_c, m1, m2
+
+    mem_end= process_memory()
+    return total_c, m1, m2, mem_end-mem_start
             
-
-
 
 # main function
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input",required=True,type=str,help="path to datapoints")
-    parser.add_argument("--output",required=True,type=str,help="path to output files")
+    parser.add_argument("--input",required=True,type=str,help="path to datapoint file")
+    parser.add_argument("--output",required=True,type=str,help="path to output file")
 
     args = parser.parse_args()
 
-    os.makedirs(args.output,exist_ok=True)
+    directory = os.path.dirname(args.output)
+    os.makedirs(directory,exist_ok=True)
 
-    for file in os.listdir(args.input):
-        if file.endswith('.txt'):
-            print('Reading ',file)
-            s1, s2 = generate(os.path.join(args.input,file))
-            align_cost, matching_1, matching_2 = efficient(s1,s2,2)  # alter this last arg for performance testing
-            with open(os.path.join(args.output,file.replace('in','output')), 'w') as f:
-                data = [str(align_cost),'\n',
-                        matching_1,'\n',
-                        matching_2,'\n']
-                f.writelines(data)
-            print('Reading ',file, 'completed')
+    if args.input.endswith('.txt'):
+        print('Reading ',args.input)
+        s1, s2 = generate(args.input)
+        start_time = time.time()
+        mem_start = process_memory()
+        align_cost, matching_1, matching_2, mem = efficient(s1,s2,2)  # alter this last arg for performance testing
+        mem_end = process_memory()
+        end_time = time.time()
+        time_taken_ms = (end_time - start_time) * 1000
+        print('Reading complete!')
 
-    # add time & memory assessment here
-    # time_calc()
-    # memory_calc()
+        with open(args.output, 'w') as f:
+            print('Writing to:',args.output)
+            data = [str(align_cost),'\n',
+                    matching_1,'\n',
+                    matching_2,'\n',
+                    str(time_taken_ms),'\n',
+                    str(mem),'\n',
+                    str(mem_end-mem_start),'\n']
+            f.writelines(data)
+        print('memory usage: ', mem, 'outside mem: ',mem_end-mem_start)
+        print('Writing complete!')
 
-    #efficient(args.input)
 
 if __name__ == '__main__':
     main()
-    #s1= 'ATGGCGCGTTA'
-    #s2 = 'AACATGGCCGATT'
+    #path = '../CSCI570_Project_Minimum_Jul_14/Datapoints/in1.txt'
+    #s1, s2 = generate(path)
+    #start = process_memory()
+    #align_cost, matching_1, matching_2, inside_men = efficient(s1,s2,2)  # alter this last arg for performance testing
+    #end = process_memory()
+    #print(start,end,end-start,inside_men)
+    #test_mem()
 
-    #efficient(s1,s2,2)
-    #a,b,c = basic(s1,s2)
-    #print(a)
-    #print(b)
-    #print(c)

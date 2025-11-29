@@ -1,1 +1,15 @@
-python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints --output ../basic_output
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in1.txt --output ../basic_output/out1.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in2.txt --output ../basic_output/out2.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in3.txt --output ../basic_output/out3.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in4.txt --output ../basic_output/out4.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in5.txt --output ../basic_output/out5.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in6.txt --output ../basic_output/out6.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in7.txt --output ../basic_output/out7.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in8.txt --output ../basic_output/out8.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in9.txt --output ../basic_output/out9.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in10.txt --output ../basic_output/out10.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in11.txt --output ../basic_output/out11.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in12.txt --output ../basic_output/out12.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in13.txt --output ../basic_output/out13.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in14.txt --output ../basic_output/out14.txt
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in15.txt --output ../basic_output/out15.txt
