@@ -4,7 +4,7 @@
 import os
 import argparse
 import time
-import psutil
+import psutil, tracemalloc
 import math
 from input_generate import generate
 
@@ -115,10 +115,19 @@ def main():
     if args.input.endswith('.txt'):
         print('Reading ',args.input)
         s1, s2 = generate(args.input)
+        print(len(s1),len(s2))
         start_time = time.time()
-        align_cost, matching_1, matching_2, mem = basic(s1,s2)
+        mem_s = process_memory()
+        #tracemalloc.start()
+        align_cost, matching_1, matching_2 = basic(s1,s2)
+        mem_e = process_memory()
+        #_, mem = tracemalloc.get_traced_memory()
+        #tracemalloc.stop()
+        #mem = mem/1024
         end_time = time.time()
         time_taken_ms = (end_time - start_time) * 1000
+        mem = mem_e - mem_s
+        print('mem: ',mem)
         print('Reading complete!')
 
         with open(args.output, 'w') as f:
