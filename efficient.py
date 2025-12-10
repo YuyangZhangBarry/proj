@@ -30,16 +30,14 @@ ALPHA = {
 }
 DELTA = 30
 
-
 def process_memory():
     process = psutil.Process(os.getpid())
     mem = process.memory_info().rss   # bytes
     return mem / 1024       # KB
 
-
 """ D&C algorithm """
 # memory measure using psutil
-def efficient_p(s1,s2,base_len): 
+def efficient_p(s1,s2,base_len=2): 
     mem_start = process_memory()
     # base length should be higher than at least 1
     base_len = max(base_len,1)
@@ -149,13 +147,8 @@ def main():
         if args.input.endswith('.txt'):
             print('Reading ',args.input)
             s1, s2 = generate(args.input)
-            #print(len(s1),len(s2))
             start_time = time.time()
-            #tracemalloc.start()
             align_cost, matching_1, matching_2,mem = efficient_p(s1,s2,args.base_length)  # alter this last arg for performance testing
-            #_, mem = tracemalloc.get_traced_memory()
-            #tracemalloc.stop()
-            #mem = mem / 1024
             end_time = time.time()
             time_taken_ms = (end_time - start_time) * 1000
             print('Reading complete!')
@@ -175,7 +168,6 @@ def main():
         if args.input.endswith('.txt'):
             print('Reading ',args.input)
             s1, s2 = generate(args.input)
-            #print(len(s1),len(s2))
             start_time = time.time()
             tracemalloc.start()
             align_cost, matching_1, matching_2 = efficient_t(s1,s2,args.base_length)  # alter this last arg for performance testing
