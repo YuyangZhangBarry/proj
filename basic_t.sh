@@ -1,0 +1,15 @@
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in1.txt --output ../basic_t/out1.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in2.txt --output ../basic_t/out2.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in3.txt --output ../basic_t/out3.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in4.txt --output ../basic_t/out4.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in5.txt --output ../basic_t/out5.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in6.txt --output ../basic_t/out6.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in7.txt --output ../basic_t/out7.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in8.txt --output ../basic_t/out8.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in9.txt --output ../basic_t/out9.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in10.txt --output ../basic_t/out10.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in11.txt --output ../basic_t/out11.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in12.txt --output ../basic_t/out12.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in13.txt --output ../basic_t/out13.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in14.txt --output ../basic_t/out14.txt --mode trace
+python basic.py --input ../CSCI570_Project_Minimum_Jul_14/Datapoints/in15.txt --output ../basic_t/out15.txt --mode trace

@@ -1,10 +1,13 @@
 """implementation of the memory efficient solution"""
 
 # import modules
+import os
 import argparse
-from input_generate import generate
-from basic import basic
+import time
+import psutil,tracemalloc
 import math
+from input_generate import parse_file as generate
+from basic import basic, min_cost
 
 # cost
 ALPHA = {
@@ -27,94 +30,167 @@ ALPHA = {
 }
 DELTA = 30
 
-# dp algorithm
-def efficient(s1,s2, size=2):
-    l1, l2 = len(s1), len(s2)
+def process_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss   # bytes
+    return mem / 1024       # KB
 
-    if l1 <= size or l2 <= 1:
-        return basic(s1, s2)
+""" D&C algorithm """
+# memory measure using psutil
+def efficient_p(s1,s2,base_len=2): 
+    mem_start = process_memory()
+    # base length should be higher than at least 1
+    base_len = max(base_len,1)
 
-    dp1 = [[0] * 2 for _ in range(l2 + 1)]
-    dp2 = [[0] * 2 for _ in range(l2 + 1)]
-    s1_left = s1[:(l1 // 2)]
-    s1_right = s1[(l1 // 2):]
-    s1_right_R = s1_right[::-1]
-    s2_R = s2[::-1]
+    n, m = len(s1), len(s2)
 
-    # dp tables initialization
-    for j in range(l2 + 1):
-        dp1[j][0] = j * DELTA
-        dp2[j][0] = j * DELTA
+    def recur(start_1,end_1,start_2,end_2):
+        if end_1 - start_1 + 1 <= base_len or end_2 - start_2 + 1 <= base_len:
+            # solve this directly
+            if end_2 < start_2:
+                return basic(s1[start_1:end_1+1],'')
+            return basic(s1[start_1:end_1+1],s2[start_2:end_2+1])
+        
+        # split s1 in half
+        mid = (start_1+end_1)//2
+        
+        s1_left = s1[start_1:mid+1]
+        s1_right_reversed = s1[end_1:mid:-1]
+
+        """ Finding the optimal split point """
+        dp = min_cost(s1_left,s2[start_2:end_2+1])
+        dp_T = min_cost(s1_right_reversed,s2[end_2:start_2:-1]+s2[start_2])   
+        n = len(dp)
+
+        split_point = 0
+        cost = math.inf
+        
+        for i in range(n):
+            if dp[i] + dp_T[n-i-1] < cost:
+                cost = dp[i] + dp_T[n-i-1]
+                split_point = start_2 + i-1
+        
+
+        # solve the problem recursively 
+        cost_left, m_1_left, m_2_left = recur(start_1,mid,start_2,split_point)
+        cost_right, m_1_right, m_2_right = recur(mid+1,end_1,split_point+1,end_2)
+
+
+        return cost_left+cost_right, m_1_left+m_1_right, m_2_left+m_2_right
     
-    # filling up dp tables
-    for i in range(1, len(s1_left) + 1):
-        idx = i % 2
-        dp1[0][idx] = i * DELTA
-        dp2[0][idx] = i * DELTA
-        for j in range(1, l2 + 1):
-            if idx == 1:
-                dp1[j][idx] = min(dp1[j - 1][idx - 1] + ALPHA[(s1_left[i - 1], s2[j - 1])],
-                                  dp1[j][idx - 1] + DELTA,
-                                  dp1[j - 1][idx] + DELTA)
-                dp2[j][idx] = min(dp2[j - 1][idx - 1] + ALPHA[(s1_right_R[i - 1], s2_R[j - 1])],
-                                  dp2[j][idx - 1] + DELTA,
-                                  dp2[j - 1][idx] + DELTA)
-            else:
-                dp1[j][idx] = min(dp1[j - 1][idx + 1] + ALPHA[(s1_left[i - 1], s2[j - 1])],
-                                  dp1[j][idx + 1] + DELTA,
-                                  dp1[j - 1][idx] + DELTA)
-                dp2[j][idx] = min(dp2[j - 1][idx + 1] + ALPHA[(s1_right_R[i - 1], s2_R[j - 1])],
-                                  dp2[j][idx + 1] + DELTA,
-                                  dp2[j - 1][idx] + DELTA)
-    if l1 % 2 != 0:
-        idx = len(s1_right_R) % 2
-        for j in range(l2 + 1):
-            if idx == 1:
-                dp2[j][idx] = min(dp2[j - 1][idx - 1] + ALPHA[(s1_right_R[-2], s2_R[j - 1])],
-                                  dp2[j][idx - 1] + DELTA,
-                                  dp2[j - 1][idx] + DELTA)
-            else:
-                dp2[j][idx] = min(dp2[j - 1][idx + 1] + ALPHA[(s1_right_R[-2], s2_R[j - 1])],
-                                  dp2[j][idx + 1] + DELTA,
-                                  dp2[j - 1][idx] + DELTA)
+    total_c, m1, m2 = recur(0,n-1,0,m-1)    
+
+    mem_end= process_memory()
+    return total_c, m1, m2, mem_end-mem_start
+
+# memory mesure using tracemalloc
+def efficient_t(s1,s2,base_len):
+    # base length should be higher than at least 1
+    base_len = max(base_len,1)
+
+    n, m = len(s1), len(s2)
+
+    def recur(start_1,end_1,start_2,end_2):
+        if end_1 - start_1 + 1 <= base_len or end_2 - start_2 + 1 <= base_len:
+            # solve this directly
+            if end_2 < start_2:
+                return basic(s1[start_1:end_1+1],'')
+            return basic(s1[start_1:end_1+1],s2[start_2:end_2+1])
+        
+        # split s1 in half
+        mid = (start_1+end_1)//2
+        
+        s1_left = s1[start_1:mid+1]
+        s1_right_reversed = s1[end_1:mid:-1]
+
+        """ Finding the optimal split point """
+        dp = min_cost(s1_left,s2[start_2:end_2+1])
+        dp_T = min_cost(s1_right_reversed,s2[end_2:start_2:-1]+s2[start_2])   
+        n = len(dp)
+
+        split_point = 0
+        cost = math.inf
+        
+        for i in range(n):
+            if dp[i] + dp_T[n-i-1] < cost:
+                cost = dp[i] + dp_T[n-i-1]
+                split_point = start_2 + i-1
+        
+
+        # solve the problem recursively 
+        cost_left, m_1_left, m_2_left = recur(start_1,mid,start_2,split_point)
+        cost_right, m_1_right, m_2_right = recur(mid+1,end_1,split_point+1,end_2)
+
+
+        return cost_left+cost_right, m_1_left+m_1_right, m_2_left+m_2_right
+    
+    total_c, m1, m2 = recur(0,n-1,0,m-1)    
+
+    return total_c, m1, m2
             
-    # finding split point
-    split = 0
-    min_cost = math.inf
-    for j in range(l2 + 1):
-        c = dp1[j][len(s1_left) % 2] + dp2[l2 - j][len(s1_right_R) % 2]
-        if c < min_cost:
-            min_cost = c
-            split = j
-
-    cost_l, matching1_l, matching2_l = efficient(s1_left, s2[:split + 1], size)
-    cost_r, matching1_r, matching2_r = efficient(s1_right, s2[split + 1:], size)
-
-    return cost_l + cost_r, matching1_l + matching1_r, matching2_l + matching2_r
-
 
 # main function
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input",required=True,type=str,help="path to datapoints")
+    parser.add_argument("--input",required=True,type=str,help="path to datapoint file")
+    parser.add_argument("--output",required=True,type=str,help="path to output file")
+    parser.add_argument("--baselength",required=False,type=int,default=10,help="base length which determines when wo solve the problem using dp directly")
+    parser.add_argument("--mode",required=False,default="psutil",type=str,help="memory measuring mode")
+    
 
     args = parser.parse_args()
 
-    # input generation
-    #s1,s2 = generate(args.input)
+    directory = os.path.dirname(args.output)
+    os.makedirs(directory,exist_ok=True)
 
-    # add time & memory assessment here
-    # time_calc()
-    # memory_calc()
+    if args.mode == "psutil":
+        if args.input.endswith('.txt'):
+            print('Reading ',args.input)
+            s1, s2 = generate(args.input)
+            start_time = time.time()
+            align_cost, matching_1, matching_2,mem = efficient_p(s1,s2,args.base_length)  # alter this last arg for performance testing
+            end_time = time.time()
+            time_taken_ms = (end_time - start_time) * 1000
+            print('Reading complete!')
 
-    #efficient(args.input)
+            with open(args.output, 'w') as f:
+                print('Writing to:',args.output)
+                data = [str(align_cost),'\n',
+                        matching_1,'\n',
+                        matching_2,'\n',
+                        str(time_taken_ms),'\n',
+                        str(mem),'\n']
+                f.writelines(data)
+            print('memory usage: ', mem)
+            print('Writing complete!')
+    
+    else:
+        if args.input.endswith('.txt'):
+            print('Reading ',args.input)
+            s1, s2 = generate(args.input)
+            start_time = time.time()
+            tracemalloc.start()
+            align_cost, matching_1, matching_2 = efficient_t(s1,s2,args.base_length)  # alter this last arg for performance testing
+            _, mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            mem = mem / 1024
+            end_time = time.time()
+            time_taken_ms = (end_time - start_time) * 1000
+            print('Reading complete!')
+
+            with open(args.output, 'w') as f:
+                print('Writing to:',args.output)
+                data = [str(align_cost),'\n',
+                        matching_1,'\n',
+                        matching_2,'\n',
+                        str(time_taken_ms),'\n',
+                        str(mem),'\n']
+                f.writelines(data)
+            print('memory usage: ', mem)
+            print('Writing complete!')      
+
 
 if __name__ == '__main__':
-    #main()
-    s1= 'ACACTGACTACTGACTGGTGACTACTGACTGG'
-    s2 = 'TATTATACGCTATTATACGCGACGCGGACGCG'
+    main()
 
-    cost, m1, m2 = efficient(s1,s2)
-    print(cost)
-    print(m1)
-    print(m2)
+
