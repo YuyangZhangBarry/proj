@@ -6,7 +6,7 @@ import argparse
 import time
 import psutil, tracemalloc
 import math
-from input_generate import generate
+from input_generate import parse_file as generate
 
 # cost
 ALPHA = {
@@ -107,38 +107,70 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input",required=True,type=str,help="path to datapoint file")
     parser.add_argument("--output",required=True,type=str,help="path to output files")
+    parser.add_argument("--mode",required=False,default="psutil",type=str,help="memory measuring mode")
+    
 
     args = parser.parse_args()
     directory = os.path.dirname(args.output)
     os.makedirs(directory,exist_ok=True)
 
-    if args.input.endswith('.txt'):
-        print('Reading ',args.input)
-        s1, s2 = generate(args.input)
-        print(len(s1),len(s2))
-        start_time = time.time()
-        mem_s = process_memory()
-        #tracemalloc.start()
-        align_cost, matching_1, matching_2 = basic(s1,s2)
-        mem_e = process_memory()
-        #_, mem = tracemalloc.get_traced_memory()
-        #tracemalloc.stop()
-        #mem = mem/1024
-        end_time = time.time()
-        time_taken_ms = (end_time - start_time) * 1000
-        mem = mem_e - mem_s
-        print('mem: ',mem)
-        print('Reading complete!')
+    if args.mode == "psutil":
+        if args.input.endswith('.txt'):
+            print('Reading ',args.input)
+            s1, s2 = generate(args.input)
+            print(len(s1),len(s2))
+            start_time = time.time()
+            mem_s = process_memory()
+            #tracemalloc.start()
+            align_cost, matching_1, matching_2 = basic(s1,s2)
+            mem_e = process_memory()
+            #_, mem = tracemalloc.get_traced_memory()
+            #tracemalloc.stop()
+            #mem = mem/1024
+            end_time = time.time()
+            time_taken_ms = (end_time - start_time) * 1000
+            mem = mem_e - mem_s
+            print('mem: ',mem)
+            print('Reading complete!')
 
-        with open(args.output, 'w') as f:
-            print('Writing to:',args.output)
-            data = [str(align_cost),'\n',
-                    matching_1,'\n',
-                    matching_2,'\n',
-                    str(time_taken_ms),'\n',
-                    str(mem),'\n']
-            f.writelines(data)
-        print('Writing complete!')
+            with open(args.output, 'w') as f:
+                print('Writing to:',args.output)
+                data = [str(align_cost),'\n',
+                        matching_1,'\n',
+                        matching_2,'\n',
+                        str(time_taken_ms),'\n',
+                        str(mem),'\n']
+                f.writelines(data)
+            print('Writing complete!')
+            
+    else:
+        if args.input.endswith('.txt'):
+            print('Reading ',args.input)
+            s1, s2 = generate(args.input)
+            print(len(s1),len(s2))
+            start_time = time.time()
+            #mem_s = process_memory()
+            tracemalloc.start()
+            align_cost, matching_1, matching_2 = basic(s1,s2)
+            #mem_e = process_memory()
+            _, mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            mem = mem/1024
+            end_time = time.time()
+            time_taken_ms = (end_time - start_time) * 1000
+            #mem = mem_e - mem_s
+            print('mem: ',mem)
+            print('Reading complete!')
+
+            with open(args.output, 'w') as f:
+                print('Writing to:',args.output)
+                data = [str(align_cost),'\n',
+                        matching_1,'\n',
+                        matching_2,'\n',
+                        str(time_taken_ms),'\n',
+                        str(mem),'\n']
+                f.writelines(data)
+            print('Writing complete!')
 
 if __name__ == '__main__':
     main()
