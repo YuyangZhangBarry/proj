@@ -178,9 +178,8 @@ def plot_mem_t():
 
 def main():
     plot_time_p()
-    #plot_time_t()
     plot_mem_p()
-    plot_mem_t()
+    #plot_mem_t()
 
 if __name__ == '__main__':
     main()
