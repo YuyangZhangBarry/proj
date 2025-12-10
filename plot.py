@@ -35,7 +35,7 @@ def plot_time_p():
 
     plt.xlabel("Datapoint index (out1 ~ out15)")
     plt.ylabel("Value from line 4")
-    plt.title("Basic vs Efficient (line 4 values)")
+    plt.title("Basic vs Efficient time")
     plt.xticks(x)             
     plt.ylim(0, 1400)          
     plt.grid(True, alpha=0.3)
@@ -78,7 +78,7 @@ def plot_time_t():
 
     plt.xlabel("Datapoint index (out1 ~ out15)")
     plt.ylabel("Value from line 4")
-    plt.title("Basic vs Efficient (line 4 values)")
+    plt.title("Basic vs Efficient time")
     plt.xticks(x)             
     plt.ylim(0, 22000)          
     plt.grid(True, alpha=0.3)
@@ -122,7 +122,7 @@ def plot_mem_p():
 
     plt.xlabel("Datapoint index (out1 ~ out15)")
     plt.ylabel("Value from line 4")
-    plt.title("Basic vs Efficient (line 4 values)")
+    plt.title("Basic vs Efficient mem using psutil")
     plt.xticks(x)             
     plt.ylim(0, 30000)          
     plt.grid(True, alpha=0.3)
@@ -166,7 +166,7 @@ def plot_mem_t():
 
     plt.xlabel("Datapoint index (out1 ~ out15)")
     plt.ylabel("Value from line 4")
-    plt.title("Basic vs Efficient (line 4 values)")
+    plt.title("Basic vs Efficient mem using tracemalloc")
     plt.xticks(x)             
     plt.ylim(0, 160000)          
     plt.grid(True, alpha=0.3)

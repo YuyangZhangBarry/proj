@@ -148,7 +148,7 @@ def main():
             print('Reading ',args.input)
             s1, s2 = generate(args.input)
             start_time = time.time()
-            align_cost, matching_1, matching_2,mem = efficient_p(s1,s2,args.base_length)  # alter this last arg for performance testing
+            align_cost, matching_1, matching_2,mem = efficient_p(s1,s2,args.baselength)  # alter this last arg for performance testing
             end_time = time.time()
             time_taken_ms = (end_time - start_time) * 1000
             print('Reading complete!')
@@ -170,7 +170,7 @@ def main():
             s1, s2 = generate(args.input)
             start_time = time.time()
             tracemalloc.start()
-            align_cost, matching_1, matching_2 = efficient_t(s1,s2,args.base_length)  # alter this last arg for performance testing
+            align_cost, matching_1, matching_2 = efficient_t(s1,s2,args.baselength)  # alter this last arg for performance testing
             _, mem = tracemalloc.get_traced_memory()
             tracemalloc.stop()
             mem = mem / 1024
